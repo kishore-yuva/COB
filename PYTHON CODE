@@ -1,0 +1,44 @@
+import pandas as pd
+import requests
+
+# Replace with your OpenWeatherMap API key
+api_key = "YOUR_OPENWEATHERMAP_API_KEY"
+
+# Define the API endpoint
+url = "https://api.openweathermap.org/data/2.5/weather"
+
+# Specify the city and other parameters
+city = "New York"
+params = {
+    "q": city,
+    "appid": api_key,
+    "units": "metric"  # You can change units to "imperial" for Fahrenheit
+}
+
+# Make the API request
+response = requests.get(url, params=params)
+
+# Check if the request was successful
+if response.status_code == 200:
+    weather_data = response.json()
+    
+    # Extract relevant information from the response
+    city_name = weather_data["name"]
+    temperature = weather_data["main"]["temp"]
+    humidity = weather_data["main"]["humidity"]
+    weather_description = weather_data["weather"][0]["description"]
+    
+    # Create a DataFrame from the data
+    data = {
+        "City": [city_name],
+        "Temperature (°C)": [temperature],
+        "Humidity (%)": [humidity],
+        "Weather Description": [weather_description]
+    }
+    df = pd.DataFrame(data)
+    
+    # Save the DataFrame to a CSV file
+    df.to_csv("weather_data.csv", index=False)
+    print("Dataset saved to weather_data.csv")
+else:
+    print("Failed to fetch data. Status code:", response.status_code)
